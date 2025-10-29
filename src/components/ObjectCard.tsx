@@ -9,6 +9,7 @@ export interface ObjectItem {
   image: string;
   owner: string;
   available: boolean;
+  status: "pending" | "approved" | "rejected";
 }
 
 interface ObjectCardProps {
@@ -30,7 +31,7 @@ const ObjectCard = ({ item, onClick }: ObjectCardProps) => {
         />
         {!item.available && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-            <Badge variant="secondary">Currently Borrowed</Badge>
+            <Badge variant="secondary">Attualmente in Prestito</Badge>
           </div>
         )}
       </div>
@@ -49,7 +50,7 @@ const ObjectCard = ({ item, onClick }: ObjectCardProps) => {
       
       <CardFooter className="px-4 pb-4 pt-0">
         <p className="text-xs text-muted-foreground">
-          Shared by <span className="font-medium text-foreground">{item.owner}</span>
+          Condiviso da <span className="font-medium text-foreground">{item.owner}</span>
         </p>
       </CardFooter>
     </Card>

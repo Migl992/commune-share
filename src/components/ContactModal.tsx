@@ -30,12 +30,12 @@ const ContactModal = ({ item, isOpen, onClose }: ContactModalProps) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error("Please fill in all fields");
+      toast.error("Compila tutti i campi");
       return;
     }
     
     // This will be connected to Supabase later
-    toast.success(`Request sent to ${item?.owner}!`);
+    toast.success(`Richiesta inviata a ${item?.owner}!`);
     onClose();
     setFormData({ name: "", email: "", message: "" });
   };
@@ -46,39 +46,39 @@ const ContactModal = ({ item, isOpen, onClose }: ContactModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Request to Borrow</DialogTitle>
+          <DialogTitle>Richiesta Prestito</DialogTitle>
           <DialogDescription>
-            Send a message to {item.owner} about "{item.title}"
+            Invia un messaggio a {item.owner} per "{item.title}"
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
+            <Label htmlFor="name">Il Tuo Nome</Label>
             <Input
               id="name"
-              placeholder="John Doe"
+              placeholder="Mario Rossi"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">Your Email</Label>
+            <Label htmlFor="email">La Tua Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="john@example.com"
+              placeholder="mario@esempio.it"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
+            <Label htmlFor="message">Messaggio</Label>
             <Textarea
               id="message"
-              placeholder="Hi! I'd like to borrow your item..."
+              placeholder="Ciao! Vorrei prendere in prestito il tuo oggetto..."
               rows={4}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -87,10 +87,10 @@ const ContactModal = ({ item, isOpen, onClose }: ContactModalProps) => {
           
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancel
+              Annulla
             </Button>
             <Button type="submit" className="flex-1">
-              Send Request
+              Invia Richiesta
             </Button>
           </div>
         </form>

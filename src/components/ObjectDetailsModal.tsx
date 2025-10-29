@@ -26,11 +26,11 @@ const ObjectDetailsModal = ({ item, isOpen, onClose, onContactClick }: ObjectDet
           <div className="flex items-start justify-between gap-4">
             <DialogTitle className="text-2xl">{item.title}</DialogTitle>
             <Badge variant={item.available ? "default" : "secondary"}>
-              {item.available ? "Available" : "Borrowed"}
+              {item.available ? "Disponibile" : "In Prestito"}
             </Badge>
           </div>
           <DialogDescription className="text-base">
-            <span className="text-muted-foreground">Shared by </span>
+            <span className="text-muted-foreground">Condiviso da </span>
             <span className="font-medium text-foreground">{item.owner}</span>
           </DialogDescription>
         </DialogHeader>
@@ -45,12 +45,12 @@ const ObjectDetailsModal = ({ item, isOpen, onClose, onContactClick }: ObjectDet
           </div>
           
           <div>
-            <h4 className="mb-2 font-semibold text-foreground">Description</h4>
+            <h4 className="mb-2 font-semibold text-foreground">Descrizione</h4>
             <p className="text-muted-foreground">{item.description}</p>
           </div>
           
           <div>
-            <h4 className="mb-2 font-semibold text-foreground">Category</h4>
+            <h4 className="mb-2 font-semibold text-foreground">Categoria</h4>
             <Badge variant="outline">{item.category}</Badge>
           </div>
           
@@ -59,7 +59,7 @@ const ObjectDetailsModal = ({ item, isOpen, onClose, onContactClick }: ObjectDet
               onClick={onContactClick} 
               className="w-full"
             >
-              Request to Borrow
+              Richiedi in Prestito
             </Button>
           )}
         </div>
