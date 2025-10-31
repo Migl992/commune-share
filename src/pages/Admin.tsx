@@ -24,10 +24,89 @@ const Admin = () => {
     const adminAuth = localStorage.getItem("adminAuth");
     if (adminAuth === "authenticated") {
       setIsAuthenticated(true);
+      initializeMockData();
       loadPendingItems();
       loadApprovedItems();
     }
   }, []);
+
+  const initializeMockData = () => {
+    // Add mock pending items if none exist
+    const existingPending = localStorage.getItem("pendingItems");
+    if (!existingPending || JSON.parse(existingPending).length === 0) {
+      const mockPending: ObjectItem[] = [
+        {
+          id: "pending-1",
+          title: "Trapano Elettrico Bosch",
+          description: "Trapano professionale con accessori, perfetto per lavori di bricolage e fai-da-te. Poco usato, in ottime condizioni.",
+          category: "Attrezzi",
+          image: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&auto=format&fit=crop",
+          owner: "Marco Bianchi",
+          available: true,
+          status: "pending"
+        },
+        {
+          id: "pending-2",
+          title: "Tenda da Campeggio 4 Posti",
+          description: "Tenda impermeabile per 4 persone, ideale per weekend in montagna. Include picchetti e custodia.",
+          category: "Sport",
+          image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&auto=format&fit=crop",
+          owner: "Laura Verdi",
+          available: true,
+          status: "pending"
+        }
+      ];
+      localStorage.setItem("pendingItems", JSON.stringify(mockPending));
+    }
+
+    // Add mock approved items if none exist
+    const existingApproved = localStorage.getItem("approvedItems");
+    if (!existingApproved || JSON.parse(existingApproved).length === 0) {
+      const mockApproved: ObjectItem[] = [
+        {
+          id: "approved-1",
+          title: "Scala Allungabile 3 Metri",
+          description: "Scala telescopica in alluminio, sicura e facile da trasportare. Perfetta per lavori in casa.",
+          category: "Attrezzi",
+          image: "https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=800&auto=format&fit=crop",
+          owner: "Giovanni Rossi",
+          available: true,
+          status: "approved"
+        },
+        {
+          id: "approved-2",
+          title: "Macchina da Cucire Singer",
+          description: "Macchina da cucire vintage completamente funzionante, con manuale d'uso.",
+          category: "Casa",
+          image: "https://images.unsplash.com/photo-1597557037341-e0c5e59bf601?w=800&auto=format&fit=crop",
+          owner: "Maria Neri",
+          available: false,
+          status: "approved"
+        },
+        {
+          id: "approved-3",
+          title: "Bicicletta Mountain Bike",
+          description: "MTB 26 pollici con cambio Shimano a 21 velocità. Ben tenuta e regolarmente revisionata.",
+          category: "Sport",
+          image: "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=800&auto=format&fit=crop",
+          owner: "Paolo Gialli",
+          available: true,
+          status: "approved"
+        },
+        {
+          id: "approved-4",
+          title: "Proiettore Full HD",
+          description: "Proiettore portatile 1080p, perfetto per serate cinema o presentazioni. Include cavi HDMI.",
+          category: "Elettronica",
+          image: "https://images.unsplash.com/photo-1560109947-543149eceb16?w=800&auto=format&fit=crop",
+          owner: "Anna Blu",
+          available: true,
+          status: "approved"
+        }
+      ];
+      localStorage.setItem("approvedItems", JSON.stringify(mockApproved));
+    }
+  };
 
   const loadPendingItems = () => {
     const items = JSON.parse(localStorage.getItem("pendingItems") || "[]");
