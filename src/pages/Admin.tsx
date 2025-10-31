@@ -9,13 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Check, X, Lock } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -84,10 +77,10 @@ const Admin = () => {
                 <Lock className="h-6 w-6 text-primary-foreground" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl">Pannello Admin</DialogTitle>
-            <DialogDescription className="text-center">
+            <h2 className="text-center text-2xl font-semibold">Pannello Admin</h2>
+            <p className="text-center text-sm text-muted-foreground mt-2">
               Inserisci la password per accedere
-            </DialogDescription>
+            </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
