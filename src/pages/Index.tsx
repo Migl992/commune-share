@@ -4,6 +4,9 @@ import ObjectCard, { ObjectItem } from "@/components/ObjectCard";
 import ObjectDetailsModal from "@/components/ObjectDetailsModal";
 import UploadObjectModal from "@/components/UploadObjectModal";
 import ContactModal from "@/components/ContactModal";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search } from "lucide-react";
 
 // Mock data - will be replaced with Supabase data later
 const mockObjects: ObjectItem[] = [
@@ -75,6 +78,8 @@ const Index = () => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [items, setItems] = useState<ObjectItem[]>(mockObjects);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     // Load approved items from localStorage
@@ -84,6 +89,16 @@ const Index = () => {
 
   // Filter only approved items
   const approvedItems = items.filter(item => item.status === "approved");
+
+  // Apply category and search filters
+  const filteredItems = approvedItems.filter(item => {
+    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Get unique categories from all items
+  const categories = Array.from(new Set(items.map(item => item.category)));
 
   const handleCardClick = (item: ObjectItem) => {
     setSelectedItem(item);
@@ -114,13 +129,44 @@ const Index = () => {
           </p>
         </div>
 
-        {approvedItems.length === 0 ? (
+        {/* Filters Section */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Cerca oggetti..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tutte le categorie</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {filteredItems.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Nessun oggetto disponibile al momento</p>
+            <p className="text-muted-foreground">
+              {searchTerm || selectedCategory !== "all" 
+                ? "Nessun oggetto trovato con i filtri selezionati" 
+                : "Nessun oggetto disponibile al momento"}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {approvedItems.map((item) => (
+            {filteredItems.map((item) => (
               <ObjectCard 
                 key={item.id} 
                 item={item} 
