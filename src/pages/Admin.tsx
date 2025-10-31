@@ -8,13 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Check, X, Lock } from "lucide-react";
+import { Check, X, Lock, Trash2, AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Admin = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [pendingItems, setPendingItems] = useState<ObjectItem[]>([]);
+  const [approvedItems, setApprovedItems] = useState<ObjectItem[]>([]);
 
   useEffect(() => {
     // Check if admin is authenticated (using localStorage for demo)
@@ -23,12 +25,18 @@ const Admin = () => {
     if (adminAuth === "authenticated") {
       setIsAuthenticated(true);
       loadPendingItems();
+      loadApprovedItems();
     }
   }, []);
 
   const loadPendingItems = () => {
     const items = JSON.parse(localStorage.getItem("pendingItems") || "[]");
     setPendingItems(items);
+  };
+
+  const loadApprovedItems = () => {
+    const items = JSON.parse(localStorage.getItem("approvedItems") || "[]");
+    setApprovedItems(items);
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -38,6 +46,7 @@ const Admin = () => {
       localStorage.setItem("adminAuth", "authenticated");
       setIsAuthenticated(true);
       loadPendingItems();
+      loadApprovedItems();
       toast.success("Accesso effettuato");
     } else {
       toast.error("Password errata");
@@ -65,6 +74,22 @@ const Admin = () => {
     
     setPendingItems(remaining);
     toast.success("Oggetto rifiutato");
+  };
+
+  const handleDelete = (item: ObjectItem) => {
+    const remaining = approvedItems.filter(i => i.id !== item.id);
+    localStorage.setItem("approvedItems", JSON.stringify(remaining));
+    setApprovedItems(remaining);
+    toast.success("Oggetto eliminato");
+  };
+
+  const handleToggleAvailability = (item: ObjectItem) => {
+    const updated = approvedItems.map(i => 
+      i.id === item.id ? { ...i, available: !i.available } : i
+    );
+    localStorage.setItem("approvedItems", JSON.stringify(updated));
+    setApprovedItems(updated);
+    toast.success(item.available ? "Oggetto segnato in prestito" : "Oggetto segnato disponibile");
   };
 
   if (!isAuthenticated) {
@@ -122,62 +147,138 @@ const Admin = () => {
             Pannello Amministrazione
           </h2>
           <p className="text-muted-foreground">
-            Approva o rifiuta gli oggetti in attesa
+            Gestisci richieste e oggetti della comunità
           </p>
         </div>
 
-        {pendingItems.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">Nessun oggetto in attesa di approvazione</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {pendingItems.map((item) => (
-              <Card key={item.id} className="overflow-hidden">
-                <div className="aspect-video overflow-hidden bg-muted">
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-foreground">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Condiviso da <span className="font-medium text-foreground">{item.owner}</span>
-                      </p>
-                    </div>
-                    <Badge variant="outline">{item.category}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{item.description}</p>
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="pending">
+              Richieste in Sospeso ({pendingItems.length})
+            </TabsTrigger>
+            <TabsTrigger value="manage">
+              Gestisci Oggetti ({approvedItems.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending">
+            {pendingItems.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <p className="text-muted-foreground">Nessun oggetto in attesa di approvazione</p>
                 </CardContent>
-                <CardFooter className="flex gap-3">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 gap-2"
-                    onClick={() => handleReject(item)}
-                  >
-                    <X className="h-4 w-4" />
-                    Rifiuta
-                  </Button>
-                  <Button 
-                    className="flex-1 gap-2"
-                    onClick={() => handleApprove(item)}
-                  >
-                    <Check className="h-4 w-4" />
-                    Approva
-                  </Button>
-                </CardFooter>
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {pendingItems.map((item) => (
+                  <Card key={item.id} className="overflow-hidden">
+                    <div className="aspect-video overflow-hidden bg-muted">
+                      <img 
+                        src={item.image} 
+                        alt={item.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-foreground">{item.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Condiviso da <span className="font-medium text-foreground">{item.owner}</span>
+                          </p>
+                        </div>
+                        <Badge variant="outline">{item.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{item.description}</p>
+                    </CardContent>
+                    <CardFooter className="flex gap-3">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 gap-2"
+                        onClick={() => handleReject(item)}
+                      >
+                        <X className="h-4 w-4" />
+                        Rifiuta
+                      </Button>
+                      <Button 
+                        className="flex-1 gap-2"
+                        onClick={() => handleApprove(item)}
+                      >
+                        <Check className="h-4 w-4" />
+                        Approva
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="manage">
+            {approvedItems.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <p className="text-muted-foreground">Nessun oggetto approvato</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {approvedItems.map((item) => (
+                  <Card key={item.id} className="overflow-hidden">
+                    <div className="aspect-video overflow-hidden bg-muted relative">
+                      <img 
+                        src={item.image} 
+                        alt={item.title}
+                        className="h-full w-full object-cover"
+                      />
+                      {!item.available && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+                          <Badge variant="secondary">In Prestito</Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold text-foreground">{item.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Condiviso da <span className="font-medium text-foreground">{item.owner}</span>
+                          </p>
+                        </div>
+                        <Badge variant="outline">{item.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{item.description}</p>
+                    </CardContent>
+                    <CardFooter className="flex gap-3">
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => handleDelete(item)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Elimina
+                      </Button>
+                      <Button 
+                        variant={item.available ? "outline" : "default"}
+                        size="sm"
+                        className="flex-1 gap-2"
+                        onClick={() => handleToggleAvailability(item)}
+                      >
+                        <AlertCircle className="h-4 w-4" />
+                        {item.available ? "Segna in Prestito" : "Segna Disponibile"}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
